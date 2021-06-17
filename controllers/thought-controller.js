@@ -104,14 +104,30 @@ const thoughtController = {
     // delete reaction
 
     deleteReaction({ params }, res) {
-        Thought.findOneAndDelete(
+        Thought.findOneAndUpdate(
           { _id: params.thoughtId },
           { $pull: { reactions: { reactionId: params.reactionId } } },
           { new: true }
         )
           .then(dbThoughtData => res.json(dbThoughtData))
           .catch(err => res.json(err));
-      }
+      },
+
+    // get all reactions
+
+    getAllReactions(req, res) {
+        Thought.find({})
+            .populate({
+                path: 'thoughts',
+                select: '-__v'
+            })
+            .select('-__v')
+            .then(dbThoughtData => res.json(dbThoughtData))
+            .catch(err => {
+                console.log(err);
+                res.status(400).json(err);
+            });
+    }
 
 }
 
